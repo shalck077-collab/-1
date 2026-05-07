@@ -1,0 +1,23 @@
+{
+  "name": "النظام المحاسبي الاحترافي",
+  "short_name": "المحاسب",
+  "description": "نظام محاسبي متكامل لإدارة العماير والعمال والشراكة",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0288d1",
+  "theme_color": "#0288d1",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icons/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
