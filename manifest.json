@@ -1,23 +1,106 @@
 {
-  "name": "النظام المحاسبي الاحترافي",
-  "short_name": "المحاسب",
-  "description": "نظام محاسبي متكامل لإدارة العماير والعمال والشراكة",
-  "start_url": "./index.html",
+  "name": "تطبيق إدارة الفواتير",
+  "short_name": "مدير الفواتير",
+  "description": "تطبيق احترافي لإدارة فواتير الكهرباء والمياه",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0288d1",
-  "theme_color": "#0288d1",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#1976d2",
+  "dir": "rtl",
+  "lang": "ar",
   "icons": [
     {
-      "src": "icons/icon.png",
-      "sizes": "192x192",
+      "src": "assets/icons/icon-72x72.png",
+      "sizes": "72x72",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "icons/icon.png",
+      "src": "assets/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/maskable-icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/icons/maskable-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["utilities", "productivity"],
+  "screenshots": [
+    {
+      "src": "assets/screenshots/screenshot-1.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "assets/screenshots/screenshot-2.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "إضافة فاتورة كهرباء",
+      "short_name": "فاتورة كهرباء",
+      "description": "إضافة فاتورة كهرباء جديدة",
+      "url": "app.html?section=electricity",
+      "icons": [{"src": "assets/icons/shortcut-electricity.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "إضافة فاتورة مياه",
+      "short_name": "فاتورة مياه",
+      "description": "إضافة فاتورة مياه جديدة",
+      "url": "app.html?section=water",
+      "icons": [{"src": "assets/icons/shortcut-water.png", "sizes": "192x192"}]
     }
   ]
 }
