@@ -24,7 +24,7 @@
 .
 ├── index.html              # صفحة الدخول
 ├── app.html                # صفحة التطبيق الرئيسية
-├── manifest.json           # ملف الـ PWA
+├── manifest.json           # ملف PWA
 ├── service-worker.js       # خادم الخدمة
 ├── css/
 │   ├── styles.css          # الأنماط الأساسية
@@ -47,8 +47,7 @@
 │   ├── logo.png            # الشعار
 │   └── splash.png          # صورة البداية
 └── lib/
-    ├── chart.js            # مكتبة الرسوم البيانية
-    └── jspdf/              # مكتبة PDF
+    └── chart.min.js        # مكتبة الرسوم البيانية
 ```
 
 ## 🚀 البدء السريع

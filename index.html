@@ -2,693 +2,338 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>نظام محاسبي متكامل</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1976d2">
+    <meta name="description" content="تطبيق احترافي لإدارة فواتير الكهرباء والمياه">
+    <title>تطبيق إدارة الفواتير</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css">
-    <script src="cordova.js"></script>
-    <!-- Service Worker disabled for Cordova -->
-    <!-- تحميل مكتبات jsPDF (يمكنك استخدام المحلية أو الـCDN) -->
-    <script src="js/jspdf.umd.min.js"></script>
-    <script src="js/jspdf.plugin.autotable.min.js"></script>
+    <link rel="icon" type="image/png" href="assets/icons/favicon.png">
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <!-- تحميل مكتبة Chart.js (محلياً) -->
-    <script src="js/chart.min.js"></script>
-    <!-- أو استخدم الـCDN إذا لم تكن الملفات المحلية متوفرة -->
-    <!--
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    -->
+        :root {
+            --primary: #1976d2;
+            --primary-dark: #1565c0;
+            --primary-light: #42a5f5;
+            --accent: #ff6f00;
+            --success: #43a047;
+            --danger: #e53935;
+            --warning: #fb8c00;
+            --text: #212121;
+            --text-light: #666;
+            --bg: #ffffff;
+            --bg-light: #f5f5f5;
+            --border: #e0e0e0;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        body.dark-mode {
+            --primary: #42a5f5;
+            --text: #e0e0e0;
+            --text-light: #b0b0b0;
+            --bg: #1e1e1e;
+            --bg-light: #2d2d2d;
+            --border: #404040;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: var(--bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .login-header p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: var(--bg-light);
+            color: var(--text);
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-light);
+        }
+
+        .login-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--bg-light);
+            border: none;
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: rgba(67, 160, 71, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .message.error {
+            background: rgba(229, 57, 53, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 24px;
+            }
+
+            .login-header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- شاشة تسجيل الدخول -->
-    <div id="passwordScreen" class="modal" style="display: none; background: var(--bg-color); z-index: 2000;">
-        <div class="modal-content" style="max-width: 400px; margin: 100px auto; text-align: center;">
-            <h2>🔒 تسجيل الدخول</h2>
-            <p>يرجى إدخال كلمة المرور للوصول إلى النظام</p>
-            <input type="password" id="passwordInput" placeholder="كلمة المرور">
-            <button class="btn btn-save" onclick="checkPassword()" style="width: 100%;">دخول</button>
+    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">💡</div>
+            <h1>مدير الفواتير</h1>
+            <p>تطبيق احترافي لإدارة فواتير الكهرباء والمياه</p>
         </div>
+
+        <div class="message" id="message"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="password">كلمة المرور</label>
+                <input type="password" id="password" placeholder="أدخل كلمة مرورك" required>
+            </div>
+
+            <div class="form-group">
+                <label for="passwordConfirm">تأكيد كلمة المرور</label>
+                <input type="password" id="passwordConfirm" placeholder="أدخل كلمة المرور مرة أخرى" required>
+            </div>
+
+            <div class="login-actions">
+                <button type="button" class="btn btn-secondary" onclick="resetForm()">مسح</button>
+                <button type="submit" class="btn btn-primary">دخول</button>
+            </div>
+        </form>
     </div>
 
-    <!-- Modal for Tables and Reports -->
-    <div id="universalModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">عرض البيانات</h2>
-                <span class="close-btn" onclick="closeModal()">&times;</span>
-            </div>
-            <div id="modalBody" class="modal-body">
-                <!-- Dynamic content will be injected here -->
-            </div>
-            <div class="modal-footer" style="margin-top: 20px; text-align: left;">
-                <button class="btn btn-save" id="modalPrintBtn" style="display: none;">حفظ PDF</button>
+    <script>
+        // Theme Toggle
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            updateThemeButton();
+        }
 
-            </div>
-        </div>
-    </div>
+        function updateThemeButton() {
+            const btn = document.querySelector('.theme-toggle');
+            btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        }
 
-    <div class="container" id="mainContent" style="display: block;">
-        <div id="header">
-            <div id="headerInfo"></div>
-            <button id="darkModeToggle" onclick="toggleDarkMode()" title="تبديل الوضع الليلي">🌙</button>
-        </div>
-        <div id="notificationArea" class="notification-area"></div>
-        
-        <div id="dashboard" class="tab-content">
-            <h2>📊 لوحة التحكم المتقدمة</h2>
-            
-            <!-- بطاقات الإحصائيات السريعة -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(2, 136, 209, 0.1); color: var(--primary-color);">🏗️</div>
-                    <div class="stat-info">
-                        <span class="stat-label">إجمالي المسلمات</span>
-                        <span class="stat-value" id="stat-total-buildings">0</span>
-                        <span class="stat-unit">ريال</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(229, 57, 53, 0.1); color: var(--danger-color);">👷</div>
-                    <div class="stat-info">
-                        <span class="stat-label">مستحقات العمال</span>
-                        <span class="stat-value" id="stat-total-workers">0</span>
-                        <span class="stat-unit">ريال</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(67, 160, 71, 0.1); color: var(--success-color);">🤝</div>
-                    <div class="stat-info">
-                        <span class="stat-label">صافي الشراكة</span>
-                        <span class="stat-value" id="stat-partnership-balance">0</span>
-                        <span class="stat-unit">ريال</span>
-                    </div>
-                </div>
-            </div>
+        // Initialize theme
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+        updateThemeButton();
 
-            <div class="dashboard-grid">
-                <div class="chart-card">
-                    <h3>💰 المسلمات حسب العمارة</h3>
-                    <canvas id="buildingsChart"></canvas>
-                </div>
-                <div class="chart-card">
-                    <h3>👷 توزيع مستحقات العمال</h3>
-                    <canvas id="workersChart"></canvas>
-                </div>
-                <div class="chart-card full-width">
-                    <h3>🤝 تتبع قبض الشركاء (يحيى وصدام)</h3>
-                    <canvas id="partnershipChart"></canvas>
-                </div>
-            </div>
-        </div>
-        <!-- القائمة السفلية للهواتف والعلوية للحاسوب -->
-        <nav class="bottom-nav">
-            <button class="nav-item active" onclick="openTab('dashboard')">
-                <span class="nav-icon">📊</span>
-                <span class="nav-text">الرئيسية</span>
-            </button>
-            <button class="nav-item" onclick="openTab('buildings')">
-                <span class="nav-icon">🏗️</span>
-                <span class="nav-text">العماير</span>
-            </button>
-            <button class="nav-item" onclick="openTab('workers')">
-                <span class="nav-icon">👷</span>
-                <span class="nav-text">العمال</span>
-            </button>
-            <button class="nav-item" onclick="openTab('partnership')">
-                <span class="nav-icon">🤝</span>
-                <span class="nav-text">الشراكة</span>
-            </button>
-            <button class="nav-item" onclick="openTab('settings')">
-                <span class="nav-icon">⚙️</span>
-                <span class="nav-text">الإعدادات</span>
-            </button>
-        </nav>
-        <div id="buildings" class="tab-content">
-            <h2>🏗️ إدارة العماير</h2>
-            
-            <!-- شبكة البطاقات التفاعلية -->
-            <div class="action-cards-grid">
-                <div class="action-card" onclick="openBuildingWindow('addBuildingWindow')">
-                    <div class="action-card-icon">🏗️</div>
-                    <div class="action-card-title">إضافة عمارة</div>
-                    <div class="action-card-desc">تعريف عمارة جديدة</div>
-                </div>
-                <div class="action-card" onclick="openBuildingWindow('addDeliveryWindow')">
-                    <div class="action-card-icon">💰</div>
-                    <div class="action-card-title">تسجيل مسلمة</div>
-                    <div class="action-card-desc">إضافة مبالغ مسلمة</div>
-                </div>
-                <div class="action-card" onclick="openBuildingWindow('reportsWindow')">
-                    <div class="action-card-icon">📊</div>
-                    <div class="action-card-title">التقارير</div>
-                    <div class="action-card-desc">عرض وحفظ التقارير</div>
-                </div>
-                <div class="action-card" onclick="showTableInModal('buildingsTable', 'جدول المسلمات للعماير')">
-                    <div class="action-card-icon">📋</div>
-                    <div class="action-card-title">جدول المسلمات</div>
-                    <div class="action-card-desc">عرض جميع البيانات</div>
-                </div>
-            </div>
+        // Message Display
+        function showMessage(text, type = 'success') {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message show ${type}`;
+            setTimeout(() => msg.classList.remove('show'), 4000);
+        }
 
-            <!-- النوافذ المخفية (تظهر عند الطلب) -->
-            <div id="addBuildingWindow" class="form-window" style="display: none;">
-                <div class="form-window-header">
-                    <div class="form-window-title">🏗️ إضافة عمارة جديدة</div>
-                    <span class="close-btn" onclick="closeBuildingWindow('addBuildingWindow')">&times;</span>
-                </div>
-                <input id="buildingName" placeholder="اسم العمارة">
-                <input id="buildingLocation" placeholder="المكان">
-                <input id="buildingNote" placeholder="ملاحظة (اختياري)">
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-add" style="flex: 2;" onclick="addBuilding()">حفظ العمارة</button>
-                    <button class="btn btn-delete" style="flex: 1;" onclick="deleteBuilding()">حذف</button>
-                </div>
-            </div>
+        // Reset Form
+        function resetForm() {
+            document.getElementById('loginForm').reset();
+        }
 
-            <div id="addDeliveryWindow" class="form-window" style="display: none;">
-                <div class="form-window-header">
-                    <div class="form-window-title">💰 تسجيل مبلغ مسلم</div>
-                    <span class="close-btn" onclick="closeBuildingWindow('addDeliveryWindow')">&times;</span>
-                </div>
-                <select id="buildingSelect"></select>
-                <input id="amountDelivered" type="text" inputmode="numeric" pattern="[0-9,]*" placeholder="المبلغ المسلم" onkeyup="formatNumberInput(this)">
-                <select id="receiver">
-                    <option value="يحيى">يحيى</option>
-                    <option value="صدام">صدام</option>
-                    <option value="أخرى">أخرى</option>
-                </select>
-                <input id="customReceiver" placeholder="اسم المستلم (إذا أخرى)" style="display: none;">
-                <input id="deliveryDate" type="date">
-                <input id="deliveryNote" placeholder="ملاحظة (اختياري)">
-                <button class="btn btn-add" style="width: 100%;" onclick="addDelivery()">إضافة المسلمة</button>
-            </div>
+        // Login Form
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('passwordConfirm').value;
 
-            <div id="reportsWindow" class="form-window" style="display: none;">
-                <div class="form-window-header">
-                    <div class="form-window-title">📊 تقارير العماير</div>
-                    <span class="close-btn" onclick="closeBuildingWindow('reportsWindow')">&times;</span>
-                </div>
-                <select id="buildingReportSelect"></select>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-save" style="flex: 1;" onclick="generateBuildingReport()">إنشاء تقرير</button>
-                    <button class="btn btn-print" style="flex: 1;" onclick="saveBuildingReportAsPDF()">حفظ PDF</button>
-                </div>
-                <div id="buildingReport" class="report-content" style="display: none; margin-top: 15px;"></div>
-            </div>
+            if (!password || !passwordConfirm) {
+                showMessage('الرجاء ملء جميع الحقول', 'error');
+                return;
+            }
 
-            <!-- قسم البحث السريع (دائم الظهور) -->
-            <div class="search-container">
-                <input type="text" id="searchBuildings" placeholder="🔍 بحث سريع (اكتب واضغط Enter لعرض التفاصيل في نافذة)" onkeyup="if(event.key==='Enter'){filterTable('buildingsTable', this.value, true)}else{filterTable('buildingsTable', this.value)}">
-            </div>
+            if (password !== passwordConfirm) {
+                showMessage('كلمات المرور غير متطابقة', 'error');
+                return;
+            }
 
-            <!-- أزرار الوصول السريع للأرشيف والقوائم -->
-            <div class="quick-actions" style="display: flex; gap: 10px; margin-bottom: 15px;">
-                <button class="btn btn-success" style="flex: 1;" onclick="showPaidBuildings()">🏗️ المسددة</button>
-                <button class="btn btn-delete" style="flex: 1;" onclick="showUnpaidBuildings()">🏗️ غير المسددة</button>
-                <button class="btn btn-import" style="flex: 1;" onclick="showArchivedBuildings()">📦 الأرشيف</button>
-            </div>
+            if (password.length < 4) {
+                showMessage('كلمة المرور يجب أن تكون 4 أحرف على الأقل', 'error');
+                return;
+            }
 
-            <!-- الجدول الأصلي (مخفي ويستخدم للعرض في المودال) -->
-            <div class="table-container" style="display: none;">
-                <table id="buildingsTable" class="dynamic-table">
-                    <thead>
-                        <tr>
-                            <th class="sortable-header">اسم العمارة (المكان)</th>
-                            <th class="sortable-header">المبلغ المسلم</th>
-                            <th class="sortable-header">المستلم</th>
-                            <th class="sortable-header">التاريخ (اليوم)</th>
-                            <th class="sortable-header">ملاحظة</th>
-                            <th class="sortable-header">الإجمالي</th>
-                            <th class="sortable-header">حالة الدفع</th>
-                            <th>إجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-        <div id="workers" class="tab-content">
-            <h2>👷 إدارة العمال</h2>
-
-            <!-- شبكة البطاقات التفاعلية للعمال -->
-            <div class="action-cards-grid">
-                <div class="action-card" onclick="openWindow('addWorkerWindow')">
-                    <div class="action-card-icon">👷</div>
-                    <div class="action-card-title">إضافة عامل</div>
-                    <div class="action-card-desc">تعريف عامل جديد</div>
-                </div>
-                <div class="action-card" onclick="openWindow('addWorkWindow')">
-                    <div class="action-card-icon">📝</div>
-                    <div class="action-card-title">تسجيل عمل</div>
-                    <div class="action-card-desc">إضافة يومية عمل</div>
-                </div>
-                <div class="action-card" onclick="openWindow('workerReportsWindow')">
-                    <div class="action-card-icon">📊</div>
-                    <div class="action-card-title">تقارير العمال</div>
-                    <div class="action-card-desc">كشف حساب عامل</div>
-                </div>
-                <div class="action-card" onclick="showTableInModal('workersTable', 'جدول عمل العمال')">
-                    <div class="action-card-icon">📋</div>
-                    <div class="action-card-title">جدول العمل</div>
-                    <div class="action-card-desc">عرض تفاصيل العمل</div>
-                </div>
-            </div>
-
-            <!-- النوافذ المخفية للعمال -->
-            <div id="addWorkerWindow" class="form-window" style="display: none;">
-                <div class="form-window-header">
-                    <div class="form-window-title">👷 إضافة عامل جديد</div>
-                    <span class="close-btn" onclick="closeWindow('addWorkerWindow')">&times;</span>
-                </div>
-                <input id="workerName" placeholder="اسم العامل">
-                <input id="workerWage" type="text" inputmode="numeric" pattern="[0-9,]*" placeholder="أجر العامل" onkeyup="formatNumberInput(this)">
-                <input id="workerNote" placeholder="ملاحظة (اختياري)">
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-add" style="flex: 2;" onclick="addWorker()">حفظ العامل</button>
-                    <button class="btn btn-delete" style="flex: 1;" onclick="deleteWorker()">حذف</button>
-                </div>
-                <button class="btn btn-toggle" style="width: 100%; margin-top: 10px;" onclick="showTableInModal('workersListTable', 'جدول العمال الأساسي')">عرض قائمة الأسماء</button>
-            </div>
-
-            <div id="addWorkWindow" class="form-window" style="display: none;">
-                <div class="form-window-header">
-                    <div class="form-window-title">📝 تسجيل يومية عمل</div>
-                    <span class="close-btn" onclick="closeWindow('addWorkWindow')">&times;</span>
-                </div>
-                <select id="workerSelect"></select>
-                <select id="workPeriod">
-                    <option value="0">فترة العمل: 0</option>
-                    <option value="0.5">فترة العمل: 0.5</option>
-                    <option value="1" selected>فترة العمل: 1</option>
-                    <option value="1.5">فترة العمل: 1.5</option>
-                </select>
-                <input id="workerDelivered" type="text" inputmode="numeric" pattern="[0-9,]*" placeholder="المسلم مع العامل" onkeyup="formatNumberInput(this)">
-                <input id="workerExtra" type="text" inputmode="numeric" pattern="[0-9,]*" placeholder="الإضافي (اختياري)" onkeyup="formatNumberInput(this)">
-                <input id="workerTransport" type="text" inputmode="numeric" pattern="[0-9,]*" placeholder="المواصلات (اختياري)" onkeyup="formatNumberInput(this)">
-                <input id="workDate" type="date">
-                <select id="workBuilding"></select>
-                <input id="workNote" placeholder="ملاحظة (اختياري)">
-                <button class="btn btn-add" style="width: 100%;" onclick="addWork()">إضافة العمل</button>
-            </div>
-
-            <div id="workerReportsWindow" class="form-window" style="display: none;">
-                <div class="form-window-header">
-                    <div class="form-window-title">📊 كشف حساب عامل</div>
-                    <span class="close-btn" onclick="closeWindow('workerReportsWindow')">&times;</span>
-                </div>
-                <select id="workerReportSelect" onchange="loadWorkerStartDate(this.value)"></select>
-                <div style="display: flex; gap: 10px;">
-                    <input id="workerReportStart" type="date" style="flex: 1;">
-                    <input id="workerReportEnd" type="date" style="flex: 1;">
-                </div>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button class="btn btn-save" style="flex: 1;" onclick="generateWorkerReport()">إنشاء تقرير</button>
-                    <button class="btn btn-save" style="flex: 1;" onclick="saveWorkerStartDate()">حفظ البداية</button>
-                    <button class="btn btn-print" style="flex: 1;" onclick="saveWorkerReportAsPDF()">حفظ PDF</button>
-                </div>
-                <div id="workerReport" class="report-content" style="display: none; margin-top: 15px;"></div>
-            </div>
-
-            <!-- البحث السريع للعمال -->
-            <div class="search-container">
-                <input type="text" id="searchWorkers" placeholder="🔍 بحث سريع (اكتب واضغط Enter لعرض التفاصيل في نافذة)" onkeyup="if(event.key==='Enter'){filterTable('workersTable', this.value, true)}else{filterTable('workersTable', this.value)}">
-            </div>
-
-            <!-- الجداول المخفية (للمودال) -->
-            <div class="table-container" style="display: none;">
-                <table id="workersTable" class="dynamic-table">
-                    <thead>
-                        <tr>
-                            <th class="sortable-header">اسم العامل</th>
-                            <th class="sortable-header">فترة العمل</th>
-                            <th class="sortable-header">المسلم</th>
-                            <th class="sortable-header">الإضافي</th>
-                            <th class="sortable-header">المواصلات</th>
-                            <th class="sortable-header">التاريخ (اليوم)</th>
-                            <th class="sortable-header">مكان العمل</th>
-                            <th class="sortable-header">اليومية</th>
-                            <th class="sortable-header">الباقي</th>
-                            <th class="sortable-header">ملاحظة</th>
-                            <th>إجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <table id="workersListTable" class="dynamic-table">
-                    <thead>
-                        <tr>
-                            <th>اسم العامل</th>
-                            <th>أجر العامل</th>
-                            <th>ملاحظة</th>
-                            <th>إجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-        <div id="partnership" class="tab-content">
-            <h2>🤝 إدارة الشراكة</h2>
-
-            <!-- شبكة البطاقات التفاعلية للشراكة -->
-            <div class="action-cards-grid">
-                <div class="action-card" onclick="openWindow('addPartnershipWindow')">
-                    <div class="action-card-icon">🤝</div>
-                    <div class="action-card-title">تسجيل يومية</div>
-                    <div class="action-card-desc">إدخال بيانات الشراكة</div>
-                </div>
-                <div class="action-card" onclick="openWindow('partnershipReportsWindow')">
-                    <div class="action-card-icon">📊</div>
-                    <div class="action-card-title">تصفية الحساب</div>
-                    <div class="action-card-desc">عرض التقارير والملخص</div>
-                </div>
-                <div class="action-card" onclick="showTableInModal('partnershipTable', 'جدول الشراكة الكامل')">
-                    <div class="action-card-icon">📋</div>
-                    <div class="action-card-title">جدول البيانات</div>
-                    <div class="action-card-desc">عرض السجل التاريخي</div>
-                </div>
-            </div>
-
-            <!-- النوافذ المخفية للشراكة -->
-            <div id="addPartnershipWindow" class="form-window" style="display: none;">
-                <div class="form-window-header">
-                    <div class="form-window-title">🤝 تسجيل بيانات الشراكة اليومية</div>
-                    <span class="close-btn" onclick="closeWindow('addPartnershipWindow')">&times;</span>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="partner-box" style="border: 1px solid var(--border-color); padding: 10px; border-radius: 10px;">
-                        <h4 style="margin-top: 0; color: var(--primary-color);">👨‍💼 يحيى</h4>
-                        <input id="yahyaReceived" type="text" inputmode="numeric" pattern="[0-9,]*" placeholder="قبض يحيى" onkeyup="formatNumberInput(this)">
-                        <select id="yahyaReceivedFrom"></select>
-                        <input id="yahyaPaidWorkers" type="text" inputmode="numeric" pattern="[0-9,]*" placeholder="دفع للعمال" onkeyup="formatNumberInput(this)">
-                        <input id="yahyaExpenses" type="text" inputmode="numeric" pattern="[0-9,]*" placeholder="صرفة" onkeyup="formatNumberInput(this)">
-                        <input id="yahyaToSaddam" type="text" inputmode="numeric" pattern="[0-9,]*" placeholder="إلى صدام" onkeyup="formatNumberInput(this)">
-                    </div>
-                    <div class="partner-box" style="border: 1px solid var(--border-color); padding: 10px; border-radius: 10px;">
-                        <h4 style="margin-top: 0; color: var(--secondary-color);">👨‍💼 صدام</h4>
-                        <input id="saddamReceived" type="text" inputmode="numeric" pattern="[0-9,]*" placeholder="قبض صدام" onkeyup="formatNumberInput(this)">
-                        <select id="saddamReceivedFrom"></select>
-                        <input id="saddamPaidWorkers" type="text" inputmode="numeric" pattern="[0-9,]*" placeholder="دفع للعمال" onkeyup="formatNumberInput(this)">
-                        <input id="saddamExpenses" type="text" inputmode="numeric" pattern="[0-9,]*" placeholder="صرفة" onkeyup="formatNumberInput(this)">
-                        <input id="saddamToYahya" type="text" inputmode="numeric" pattern="[0-9,]*" placeholder="إلى يحيى" onkeyup="formatNumberInput(this)">
-                    </div>
-                </div>
-                <input id="partnershipDate" type="date" style="margin-top: 15px;">
-                <input id="partnershipNote" placeholder="ملاحظة (اختياري)">
-                <button class="btn btn-add" style="width: 100%;" onclick="addPartnership()">حفظ البيانات</button>
-            </div>
-
-
-
-            <div id="partnershipReportsWindow" class="form-window" style="display: none;">
-                <div class="form-window-header">
-                    <div class="form-window-title">📊 تصفية وتقارير الشراكة</div>
-                    <span class="close-btn" onclick="closeWindow('partnershipReportsWindow')">&times;</span>
-                </div>
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <input id="partnershipReportStart" type="date" style="flex: 1;">
-                    <input id="partnershipReportEnd" type="date" style="flex: 1;">
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <button class="btn btn-success" onclick="settlePartnership()">📊 ملخص التصفية</button>
-                    <button class="btn btn-save" onclick="generatePartnershipReport()">📋 إنشاء تقرير</button>
-                    <button class="btn btn-save" onclick="savePartnershipStartDate()">💾 حفظ البداية</button>
-                    <button class="btn btn-print" onclick="savePartnershipReportAsPDF()">🖨️ حفظ PDF</button>
-                </div>
-                <div id="settlement" class="report-content" style="display: none; margin-top: 15px;"></div>
-            </div>
-
-            <!-- الجداول المخفية للشراكة -->
-            <div class="table-container" style="display: none;">
-                <table id="partnershipTable" class="dynamic-table">
-                    <thead>
-                        <tr>
-                            <th class="sortable-header">التاريخ</th>
-                            <th class="sortable-header">قبض يحيى</th>
-                            <th class="sortable-header">من</th>
-                            <th class="sortable-header">دفع عمال</th>
-                            <th class="sortable-header">صرفة</th>
-                            <th class="sortable-header">لصدام</th>
-                            <th class="sortable-header">قبض صدام</th>
-                            <th class="sortable-header">من</th>
-                            <th class="sortable-header">دفع عمال</th>
-                            <th class="sortable-header">صرفة</th>
-                            <th class="sortable-header">ليحيى</th>
-                            <th class="sortable-header">ملاحظة</th>
-                            <th>إجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-        <div id="settings" class="tab-content">
-            <h2>⚙️ الإعدادات والنظام</h2>
-
-            <!-- شبكة بطاقات الإعدادات -->
-            <div class="action-cards-grid">
-                <div class="action-card" onclick="openWindow('securityWindow')">
-                    <div class="action-card-icon">🔒</div>
-                    <div class="action-card-title">الأمان</div>
-                    <div class="action-card-desc">كلمات المرور والحماية</div>
-                </div>
-                <div class="action-card" onclick="openWindow('customizationWindow')">
-                    <div class="action-card-icon">🎨</div>
-                    <div class="action-card-title">التخصيص</div>
-                    <div class="action-card-desc">الألوان والأيقونات</div>
-                </div>
-                <div class="action-card" onclick="openWindow('brandingWindow')">
-                    <div class="action-card-icon">🖼️</div>
-                    <div class="action-card-title">الهوية</div>
-                    <div class="action-card-desc">الشعار والواجهة</div>
-                </div>
-                <div class="action-card" onclick="openWindow('databaseWindow')">
-                    <div class="action-card-icon">💾</div>
-                    <div class="action-card-title">البيانات</div>
-                    <div class="action-card-desc">نسخ احتياطي ومسح</div>
-                </div>
-            </div>
-
-            <!-- نوافذ الإعدادات -->
-            <div id="securityWindow" class="form-window" style="display: none;">
-                <div class="form-window-header">
-                    <div class="form-window-title">🔒 إعدادات الأمان</div>
-                    <span class="close-btn" onclick="closeWindow('securityWindow')">&times;</span>
-                </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; background: var(--bg-color); padding: 10px; border-radius: 10px;">
-                    <span>تفعيل كلمة المرور عند الدخول:</span>
-                    <label class="switch">
-                        <input type="checkbox" id="passwordToggle" onchange="togglePasswordProtection()">
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-                <div id="passwordManagementArea" style="display: none;">
-                    <input type="password" id="newAppPassword" placeholder="كلمة مرور دخول جديدة">
-                    <button class="btn btn-save" onclick="updateAppPassword()" style="width: 100%; margin-bottom: 15px;">تحديث كلمة المرور</button>
-                </div>
-                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 15px 0;">
-                <label>كلمة مرور عمليات المسح:</label>
-                <input type="password" id="clearPasswordInputSettings" placeholder="كلمة مرور المسح">
-                <button class="btn btn-save" style="width: 100%;" onclick="setClearPassword()">حفظ كلمة مرور المسح</button>
-            </div>
-
-            <div id="brandingWindow" class="form-window" style="display: none;">
-                <div class="form-window-header">
-                    <div class="form-window-title">🖼️ الهوية والشعار</div>
-                    <span class="close-btn" onclick="closeWindow('brandingWindow')">&times;</span>
-                </div>
-                <div style="text-align: center; margin-bottom: 15px;">
-                    <img id="logo" src="" alt="شعار" style="display: none; max-width: 150px; margin: 0 auto 15px; border-radius: 10px; border: 1px solid var(--border-color);">
-                    <input type="file" id="logoInput" style="display: none;" accept="image/*">
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-add" style="flex: 1;" onclick="document.getElementById('logoInput').click()">تغيير الشعار</button>
-                        <button class="btn btn-delete" style="flex: 1;" onclick="clearLogo()">حذف الشعار</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="customizationWindow" class="form-window" style="display: none;">
-                <div class="form-window-header">
-                    <div class="form-window-title">🎨 تخصيص الألوان والأيقونات</div>
-                    <span class="close-btn" onclick="closeWindow('customizationWindow')">&times;</span>
-                </div>
+            try {
+                // Store password hash
+                const hash = await hashPassword(password);
+                localStorage.setItem('passwordHash', hash);
+                localStorage.setItem('isLoggedIn', 'false');
+                localStorage.setItem('lastLogin', new Date().toISOString());
                 
-                <!-- قسم الألوان -->
-                <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
-                    <h3 style="margin-top: 0; color: var(--primary-color);">🎨 الألوان</h3>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: bold;">اللون الأساسي:</label>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="color" id="primaryColorInput" style="width: 60px; height: 40px; border: none; border-radius: 8px; cursor: pointer;">
-                            <input type="text" id="primaryColorText" placeholder="#0288d1" style="flex: 1;" onchange="updateColorFromText('primary')">
-                            <button class="btn btn-save" style="padding: 8px 12px; font-size: 0.9rem;" onclick="applyPrimaryColor()">تطبيق</button>
-                        </div>
-                    </div>
+                showMessage('تم إنشاء كلمة المرور بنجاح', 'success');
+                setTimeout(() => {
+                    window.location.href = 'app.html';
+                }, 1500);
+            } catch (error) {
+                showMessage('حدث خطأ: ' + error.message, 'error');
+            }
+        });
 
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: bold;">اللون الثانوي:</label>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="color" id="secondaryColorInput" style="width: 60px; height: 40px; border: none; border-radius: 8px; cursor: pointer;">
-                            <input type="text" id="secondaryColorText" placeholder="#26c6da" style="flex: 1;" onchange="updateColorFromText('secondary')">
-                            <button class="btn btn-save" style="padding: 8px 12px; font-size: 0.9rem;" onclick="applySecondaryColor()">تطبيق</button>
-                        </div>
-                    </div>
+        // Simple password hashing
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
 
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: bold;">لون النجاح:</label>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="color" id="successColorInput" style="width: 60px; height: 40px; border: none; border-radius: 8px; cursor: pointer;">
-                            <input type="text" id="successColorText" placeholder="#43a047" style="flex: 1;" onchange="updateColorFromText('success')">
-                            <button class="btn btn-save" style="padding: 8px 12px; font-size: 0.9rem;" onclick="applySuccessColor()">تطبيق</button>
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: bold;">لون الخطر:</label>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="color" id="dangerColorInput" style="width: 60px; height: 40px; border: none; border-radius: 8px; cursor: pointer;">
-                            <input type="text" id="dangerColorText" placeholder="#e53935" style="flex: 1;" onchange="updateColorFromText('danger')">
-                            <button class="btn btn-save" style="padding: 8px 12px; font-size: 0.9rem;" onclick="applyDangerColor()">تطبيق</button>
-                        </div>
-                    </div>
-
-                    <button class="btn btn-success" style="width: 100%;" onclick="resetColorsToDefault()">🔄 إعادة تعيين الألوان الافتراضية</button>
-                </div>
-
-                <!-- قسم الأيقونات -->
-                <div style="margin-bottom: 15px;">
-                    <h3 style="margin-top: 0; color: var(--primary-color);">🎯 الأيقونات</h3>
-                    <p style="color: var(--nav-text); font-size: 0.9rem; margin-bottom: 15px;">يمكنك تخصيص أيقونات الأقسام الرئيسية:</p>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;">
-                            <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: bold;">أيقونة لوحة التحكم:</label>
-                            <input type="text" id="dashboardIcon" placeholder="📊" maxlength="2" style="text-align: center; font-size: 1.5rem;">
-                        </div>
-                        <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;">
-                            <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: bold;">أيقونة العماير:</label>
-                            <input type="text" id="buildingsIcon" placeholder="🏗️" maxlength="2" style="text-align: center; font-size: 1.5rem;">
-                        </div>
-                        <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;">
-                            <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: bold;">أيقونة العمال:</label>
-                            <input type="text" id="workersIcon" placeholder="👷" maxlength="2" style="text-align: center; font-size: 1.5rem;">
-                        </div>
-                        <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;">
-                            <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: bold;">أيقونة الشراكة:</label>
-                            <input type="text" id="partnershipIcon" placeholder="🤝" maxlength="2" style="text-align: center; font-size: 1.5rem;">
-                        </div>
-                        <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;">
-                            <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: bold;">أيقونة الإعدادات:</label>
-                            <input type="text" id="settingsIcon" placeholder="⚙️" maxlength="2" style="text-align: center; font-size: 1.5rem;">
-                        </div>
-                    </div>
-                    
-                    <button class="btn btn-success" style="width: 100%; margin-top: 15px;" onclick="applyCustomIcons()">✅ تطبيق الأيقونات</button>
-                    <button class="btn btn-success" style="width: 100%; margin-top: 10px;" onclick="resetIconsToDefault()">🔄 إعادة تعيين الأيقونات الافتراضية</button>
-                </div>
-
-                <!-- قسم المعاينة -->
-                <div style="background: var(--bg-color); padding: 15px; border-radius: 10px; margin-top: 15px;">
-                    <h4 style="margin-top: 0; color: var(--primary-color);">👁️ معاينة التخصيصات</h4>
-                    <div id="customizationPreview" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center;">
-                        <div style="background: var(--card-bg); padding: 10px; border-radius: 8px;">
-                            <div style="font-size: 2rem; margin-bottom: 5px;" id="previewPrimaryColor">■</div>
-                            <span style="font-size: 0.8rem; color: var(--nav-text);">اللون الأساسي</span>
-                        </div>
-                        <div style="background: var(--card-bg); padding: 10px; border-radius: 8px;">
-                            <div style="font-size: 2rem; margin-bottom: 5px;" id="previewSecondaryColor">■</div>
-                            <span style="font-size: 0.8rem; color: var(--nav-text);">اللون الثانوي</span>
-                        </div>
-                        <div style="background: var(--card-bg); padding: 10px; border-radius: 8px;">
-                            <div style="font-size: 2rem; margin-bottom: 5px;" id="previewSuccessColor">■</div>
-                            <span style="font-size: 0.8rem; color: var(--nav-text);">لون النجاح</span>
-                        </div>
-                        <div style="background: var(--card-bg); padding: 10px; border-radius: 8px;">
-                            <div style="font-size: 2rem; margin-bottom: 5px;" id="previewDangerColor">■</div>
-                            <span style="font-size: 0.8rem; color: var(--nav-text);">لون الخطر</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="databaseWindow" class="form-window" style="display: none;">
-                <div class="form-window-header">
-                    <div class="form-window-title">💾 إدارة البيانات</div>
-                    <span class="close-btn" onclick="closeWindow('databaseWindow')">&times;</span>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
-                    <button class="btn btn-save" onclick="backupData()">📤 تصدير نسخة احتياطية (JSON)</button>
-                    <input type="file" id="importAll" style="display: none;" accept=".json">
-                    <button class="btn btn-import" onclick="document.getElementById('importAll').click()">📥 استيراد نسخة احتياطية</button>
-                    
-                    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
-                    
-                    <div style="background: var(--bg-color); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color);">
-                        <h4 style="margin-top: 0; margin-bottom: 10px; color: var(--primary-color);">🔄 النسخ الاحتياطي التلقائي</h4>
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                            <span>تفعيل النسخ التلقائي:</span>
-                            <label class="switch">
-                                <input type="checkbox" id="autoBackupToggle" onchange="updateAutoBackupSettings()">
-                                <span class="slider round"></span>
-                            </label>
-                        </div>
-                        <div id="autoBackupOptions" style="display: none;">
-                            <label style="display: block; margin-bottom: 5px; font-size: 0.9rem;">تكرار النسخ:</label>
-                            <select id="autoBackupInterval" onchange="updateAutoBackupSettings()" style="width: 100%; margin-bottom: 10px;">
-                                <option value="weekly">كل أسبوع</option>
-                                <option value="monthly">كل شهر</option>
-                            </select>
-                            <p id="lastBackupInfo" style="font-size: 0.75rem; color: var(--nav-text); margin: 5px 0 0;"></p>
-                        </div>
-                    </div>
-
-                    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
-                    <button class="btn btn-delete" onclick="clearBuildingsData()">⚠️ مسح بيانات العماير</button>
-                    <button class="btn btn-delete" onclick="clearWorkersData()">⚠️ مسح بيانات العمال</button>
-                    <button class="btn btn-delete" onclick="clearPartnershipData()">⚠️ مسح بيانات الشراكة</button>
-                    
-                    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
-                    
-                    <div style="background: rgba(2, 136, 209, 0.1); padding: 15px; border-radius: 10px; border: 1px solid var(--primary-color);">
-                        <h4 style="margin-top: 0; margin-bottom: 10px; color: var(--primary-color);">🌐 المزامنة السحابية (Cloud Sync)</h4>
-                        <p style="font-size: 0.85rem; color: var(--nav-text); margin-bottom: 15px;">النسخة المحلية هي المرجع الأساسي. يمكنك مزامنة البيانات يدوياً مع السحابة.</p>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <button class="btn btn-save" onclick="uploadToCloud()" style="background-color: var(--primary-color);">📤 رفع للسحابة</button>
-                            <button class="btn btn-import" onclick="downloadFromCloud()" style="background-color: var(--secondary-color);">📥 تحميل من السحابة</button>
-                        </div>
-                        
-                        <div style="margin-top: 15px; display: flex; align-items: center; justify-content: space-between;">
-                            <span style="font-size: 0.9rem;">مزامنة تلقائية عند التوفر:</span>
-                            <label class="switch">
-                                <input type="checkbox" id="cloudSyncToggle" onchange="updateCloudSyncSettings()">
-                                <span class="slider round"></span>
-                            </label>
-                        </div>
-                        
-                        <div id="firebaseConfigArea" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--primary-color);">
-                            <p style="font-size: 0.85rem; font-weight: bold; margin-bottom: 10px;">إعدادات Firebase:</p>
-                            <input type="password" id="fbApiKey" placeholder="API Key" style="margin-bottom: 5px; font-size: 0.8rem;">
-                            <input type="text" id="fbProjectId" placeholder="Project ID" style="margin-bottom: 5px; font-size: 0.8rem;">
-                            <input type="text" id="fbDbUrl" placeholder="Database URL" style="margin-bottom: 5px; font-size: 0.8rem;">
-                            <button class="btn btn-save" onclick="saveFirebaseConfig()" style="width: 100%; font-size: 0.85rem; margin-top: 5px;">حفظ الإعدادات</button>
-                        </div>
-
-                        <p id="cloudSyncStatus" style="font-size: 0.75rem; color: var(--nav-text); margin: 10px 0 0; text-align: center;">الحالة: لم يتم الربط بعد</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 30px; padding: 20px; border-top: 1px solid var(--border-color);">
-                <p style="color: var(--nav-text); font-size: 0.8rem;">نظام المحاسبة المتكامل v3.0<br>تم التطوير بواسطة صدام العلكمي</p>
-            </div>
-        </div>
-    </div>
-    <script src="script.js"></script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js').catch(err => {
+                console.log('Service Worker registration failed:', err);
+            });
+        }
+    </script>
 </body>
 </html>
